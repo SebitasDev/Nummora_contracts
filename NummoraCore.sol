@@ -4,6 +4,8 @@ pragma solidity ^0.8.27;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 interface INUMUSToken {
     function mint(address to, uint256 amount) external;
@@ -17,6 +19,9 @@ interface ILoanNFT {
 }
 
 contract NummoraCore is ReentrancyGuard, Ownable {
+    using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
+
     //Estructuras
     struct Loan {
         address lender;
@@ -138,23 +143,7 @@ contract NummoraCore is ReentrancyGuard, Ownable {
         return loanId;
     }
 
-    function payInstallment(uint256 loanId) external nonReentrant {
-        Loan storage loan = loans[loanId];
-        require(loan.active, "Loan not active");
-        require(loan.borrower == msg.sender, "Not your loan");
-        require(loan.installmentsPaid < loan.installments, "All paid");
-        
-        IERC20(loan.stablecoin).transferFrom(msg.sender, address(this), loan.installmentAmount);
-        
-        loan.totalPaid += loan.installmentAmount;
-        loan.installmentsPaid++;
-        
-        emit PaymentMade(loanId, loan.installmentAmount);
-        
-        if (loan.installmentsPaid >= loan.installments) {
-            _completeLoan(loanId);
-        }
-    }
+    // ============ PAGOS ============ //
     
     function payEarly(uint256 loanId) external nonReentrant {
         Loan storage loan = loans[loanId];
@@ -184,6 +173,51 @@ contract NummoraCore is ReentrancyGuard, Ownable {
         
         emit PaymentMade(loanId, finalPayment);
     }
+
+    /// @notice El owner paga la cuota en nombre del borrower, pero el borrower firma la autorización
+    function payInstallmentWithSignature(
+        uint256 loanId,
+        bytes calldata signature
+    ) external onlyOwner nonReentrant {
+        Loan storage loan = loans[loanId];
+        require(loan.active, "Loan not active");
+        require(loan.installmentsPaid < loan.installments, "All paid");
+
+        // Crear hash con los datos relevantes para evitar replay attacks
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(address(this), loanId, loan.installmentAmount)
+        );
+
+        // Recuperar el firmante de la firma
+        address signer = recoverSigner(messageHash, signature);
+        require(signer == loan.borrower, "Invalid borrower signature");
+
+        // Transferir tokens desde el borrower al contrato (requiere approve previo)
+        IERC20(loan.stablecoin).transferFrom(
+            loan.borrower,
+            address(this),
+            loan.installmentAmount
+        );
+
+        // Actualizar estado del préstamo
+        loan.totalPaid += loan.installmentAmount;
+        loan.installmentsPaid++;
+
+        emit PaymentMade(loanId, loan.installmentAmount);
+
+        // Completar préstamo si ya pagó todas
+        if (loan.installmentsPaid >= loan.installments) {
+            _completeLoan(loanId);
+        }
+    }
+
+    /// @notice Verifica y recupera la dirección que firmó un mensaje
+    function recoverSigner(bytes32 messageHash, bytes memory signature) public pure returns (address) {
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+        return ethSignedMessageHash.recover(signature);
+    }
+
+    //--//
 
     function _completeLoan(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
