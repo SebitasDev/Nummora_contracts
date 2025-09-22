@@ -635,19 +635,6 @@
 						"internalType": "uint256",
 						"name": "loanId",
 						"type": "uint256"
-					}
-				],
-				"name": "payInstallment",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "loanId",
-						"type": "uint256"
 					},
 					{
 						"internalType": "bytes",
@@ -685,15 +672,27 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "registerBorrower",
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "registerBorrowerWithSignature",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "registerLender",
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "registerLenderWithSignature",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -819,6 +818,12 @@
 				},
 				"recoverSigner(bytes32,bytes)": {
 					"notice": "Verifica y recupera la dirección que firmó un mensaje"
+				},
+				"registerBorrowerWithSignature(bytes)": {
+					"notice": "El owner registra un borrower en nombre de él, usando su firma"
+				},
+				"registerLenderWithSignature(bytes)": {
+					"notice": "El owner registra un lender en nombre de él, usando su firma"
 				}
 			},
 			"version": 1
@@ -929,11 +934,11 @@
 			]
 		},
 		"NummoraCore.sol": {
-			"keccak256": "0x37a193abb451f1d1a6bf612eb6d8f83ec25656fbb8e6b02799a0041dc6bbdd8f",
+			"keccak256": "0xfd3c770c537131f2c80b209230ec72fb90e3b4f5fa9e10dce710b32cb1bd5fe0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4cc12cf1953af734b1ba67118d1f89b9685abbef3b5bf9a70460b0bd7ba65182",
-				"dweb:/ipfs/QmSGKDYW5YFnuPGbzdTQ41qc5654ErUT1jcr8qC4bPzyBr"
+				"bzz-raw://16747d4fcd098f006619fe021eba73bddaad7fde794f7c3363a0626fbecba876",
+				"dweb:/ipfs/QmdsheGLsCxaYvGC97mnNkz659GyhQ2oLtRc1SVxryWXYF"
 			]
 		}
 	},
