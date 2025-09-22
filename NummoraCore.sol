@@ -71,16 +71,37 @@ contract NummoraCore is ReentrancyGuard, Ownable {
     }
 
     // ============ REGISTRO ============
-    
-    function registerLender() external {
-        lenders[msg.sender] = true;
-        emit LenderRegistered(msg.sender);
+
+    /// @notice El owner registra un lender en nombre de él, usando su firma
+    function registerLenderWithSignature(bytes calldata signature) external onlyOwner {
+        // Hash del mensaje (usar address(this) para evitar replay en otros contratos)
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(address(this), "registerLender")
+        );
+
+        // Recuperar el firmante
+        address signer = recoverSigner(messageHash, signature);
+
+        require(!lenders[signer], "Already registered as lender");
+        // Guardar el registro
+        lenders[signer] = true;
+        emit LenderRegistered(signer);
     }
-    
-    function registerBorrower() external {
-        borrowers[msg.sender] = true;
-        emit BorrowerRegistered(msg.sender);
+
+    /// @notice El owner registra un borrower en nombre de él, usando su firma
+    function registerBorrowerWithSignature(bytes calldata signature) external onlyOwner {
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(address(this), "registerBorrower")
+        );
+
+        address signer = recoverSigner(messageHash, signature);
+
+        require(!borrowers[msg.sender], "Already registered as borrower");
+        borrowers[signer] = true;
+        emit BorrowerRegistered(signer);
     }
+
+    // ============ DEPOSITO ============
 
     function deposit(address token, uint256 amount) external nonReentrant {
         require(stablecoins[token], "Token not supported");
@@ -90,6 +111,8 @@ contract NummoraCore is ReentrancyGuard, Ownable {
         numusToken.mint(msg.sender, amount);
         numusToken.approve(address(this), amount);
     }
+
+    // ============ RETIRAR ============
 
     function withdraw(address token, uint256 amount) external nonReentrant {
         require(stablecoins[token], "Token not supported");

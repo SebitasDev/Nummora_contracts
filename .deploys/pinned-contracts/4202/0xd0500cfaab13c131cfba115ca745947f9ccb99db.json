@@ -1,6 +1,6 @@
 {
   "name": "NummusToken",
-  "address": "0xdaa8fdfd899401238ae17fbbf44aaaba2a430626",
+  "address": "0xd0500cfaab13c131cfba115ca745947f9ccb99db",
   "abi": [
     {
       "inputs": [
@@ -529,5 +529,5 @@
     }
   ],
   "filePath": "Nummora/NummusToken.sol",
-  "pinnedAt": 1758039925178
+  "pinnedAt": 1758508142336
 }

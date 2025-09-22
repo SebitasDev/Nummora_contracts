@@ -1,6 +1,6 @@
 {
   "name": "NummoraCore",
-  "address": "0xac06957918390e2b41541351b4980d19e0bea504",
+  "address": "0xf62068df10b6eeea42f8f66b693708f64506e81f",
   "abi": [
     {
       "inputs": [
@@ -298,19 +298,6 @@
           "internalType": "uint256",
           "name": "loanId",
           "type": "uint256"
-        }
-      ],
-      "name": "payInstallment",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "loanId",
-          "type": "uint256"
         },
         {
           "internalType": "bytes",
@@ -343,15 +330,27 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "registerBorrower",
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "registerBorrowerWithSignature",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "registerLender",
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "registerLenderWithSignature",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -767,5 +766,5 @@
     }
   ],
   "filePath": "Nummora/NummoraCore.sol",
-  "pinnedAt": 1758040026064
+  "pinnedAt": 1758508389472
 }

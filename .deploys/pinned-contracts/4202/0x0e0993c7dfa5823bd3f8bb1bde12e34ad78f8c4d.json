@@ -1,6 +1,6 @@
 {
   "name": "LoanNFT",
-  "address": "0xb6f5100e5e0a63661ad54fbe536c4d2a31311b44",
+  "address": "0x0e0993c7dfa5823bd3f8bb1bde12e34ad78f8c4d",
   "abi": [
     {
       "inputs": [
@@ -930,5 +930,5 @@
     }
   ],
   "filePath": "Nummora/LoanNFT.sol",
-  "pinnedAt": 1758040027163
+  "pinnedAt": 1758508355789
 }
